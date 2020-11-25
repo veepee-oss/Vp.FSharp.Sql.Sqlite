@@ -31,3 +31,8 @@ Bug reports, feature requests, and pull requests are very welcome! Please read t
 
 # Licensing
 The project is licensed under MIT. For more information on the license see the [license file](./LICENSE).
+
+#### Notes
+It has been decided to not rely on [`Microsoft.Data.Sqlite`](https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/?tabs=netcore-cli)
+[due to its lack of support for `TransactionScope`](https://github.com/dotnet/efcore/issues/13825).
+
