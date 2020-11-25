@@ -8,8 +8,8 @@
     <NeutralLanguage>en-US</NeutralLanguage>
     <Authors>Kerry Perret</Authors>
     <Company>Veepee</Company>
-    <RepositoryUrl>https://github.com/veepee-oss/Vp.FSharp</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/veepee-oss/Vp.FSharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/veepee-oss/Vp.FSharp.Sql.Sqlite</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/veepee-oss/Vp.FSharp.Sql.Sqlite</PackageProjectUrl>
     <PackageDescription>F# Wrapper for SQLite using System.Data.SQLite and Vp.FSharp.Sql</PackageDescription>
     <PackageId>Vp.FSharp.Sql.Sqlite</PackageId>
     <PackageTags>Veepee,F#,fsharp,functional,SQL,SQLite,System.Data.SQLite</PackageTags>
