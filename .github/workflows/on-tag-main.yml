@@ -1,0 +1,47 @@
+name: On Tag Main
+
+on:
+  release:
+    types: [published]
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Setup .NET Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.100
+          source-url: https://api.nuget.org/v3/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get Tag Version
+        id: getversion
+        run: echo "tag_version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+      - name: Setup NuGet folder path
+        run: echo "nuget_folder_path=./nuget" >> $GITHUB_ENV
+      - name: Setup fsproj path
+        run: echo "fsproj_path=./Vp.FSharp.Sql.Sqlite/Vp.FSharp.Sql.Sqlite.fsproj" >> $GITHUB_ENV
+      - name: Build .NET Project
+        run: dotnet build --configuration Release -p:Version=${{env.tag_version}} ${{env.fsproj_path}}
+      - name: Generate NuGet Package from .NET Project
+        run: dotnet pack --configuration Release --no-build -p:PackageVersion=${{env.tag_version}} ${{env.fsproj_path}} --output ${{env.nuget_folder_path}}
+      - name: Get NuGet Package Path
+        run: |
+          fileName=$(ls ${{env.nuget_folder_path}}/ | head -n 1)
+          echo "nuget_package_path=${{env.nuget_folder_path}}/${fileName}" >> $GITHUB_ENV
+      - name: Update NuGet Package to Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{env.nuget_package_path}}
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: Publish NuGet Package
+        run: dotnet nuget push ${{env.nuget_package_path}} --api-key ${{secrets.NUGET_KEY}} --force-english-output
