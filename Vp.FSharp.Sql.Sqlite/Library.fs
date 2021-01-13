@@ -18,25 +18,30 @@ type SqliteDbValue =
 type SqliteCommandDefinition =
     CommandDefinition<
         SQLiteConnection,
-        SQLiteTransaction,
         SQLiteCommand,
         SQLiteParameter,
         SQLiteDataReader,
+        SQLiteTransaction,
         SqliteDbValue>
 
-type SqliteGlobalConf =
-    SqlGlobalConf<
+type SqliteConfiguration =
+    SqlConfigurationCache<
         SQLiteConnection,
         SQLiteCommand>
 
-type SqliteDeps =
-    SqlDeps<
+type SqliteDependencies =
+    SqlDependencies<
         SQLiteConnection,
-        SQLiteTransaction,
         SQLiteCommand,
         SQLiteParameter,
         SQLiteDataReader,
+        SQLiteTransaction,
         SqliteDbValue>
+
+[<RequireQualifiedAccess>]
+module SqliteNullDbValue =
+    let ifNone toDbValue = NullDbValue.ifNone toDbValue SqliteDbValue.Null
+    let ifError toDbValue = NullDbValue.ifError toDbValue (fun _ -> SqliteDbValue.Null)
 
 [<RequireQualifiedAccess>]
 module SqliteCommand =
@@ -61,7 +66,7 @@ module SqliteCommand =
             parameter.Value <- value
         parameter
 
-    let private deps: SqliteDeps =
+    let private deps: SqliteDependencies =
         { CreateCommand = fun connection -> connection.CreateCommand()
           ExecuteReaderAsync = fun command _ -> Task.FromResult(command.ExecuteReader())
           DbValueToParameter = dbValueToParameter }
@@ -105,34 +110,34 @@ module SqliteCommand =
     /// Return the sets of rows as an AsyncSeq accordingly to the command definition.
     let queryAsyncSeq connection read (commandDefinition: SqliteCommandDefinition) =
         SqlCommand.queryAsyncSeq
-            connection deps (SqliteGlobalConf.Snapshot) read commandDefinition
+            connection deps (SqliteConfiguration.Snapshot) read commandDefinition
 
     /// Return the sets of rows as a list accordingly to the command definition.
     let queryList connection read (commandDefinition: SqliteCommandDefinition) =
         SqlCommand.queryList
-            connection deps (SqliteGlobalConf.Snapshot) read commandDefinition
+            connection deps (SqliteConfiguration.Snapshot) read commandDefinition
 
     /// Return the first set of rows as a list accordingly to the command definition.
     let querySetList connection read (commandDefinition: SqliteCommandDefinition) =
         SqlCommand.querySetList
-            connection deps (SqliteGlobalConf.Snapshot) read commandDefinition
+            connection deps (SqliteConfiguration.Snapshot) read commandDefinition
 
     /// Return the 2 first sets of rows as a tuple of 2 lists accordingly to the command definition.
     let querySetList2 connection read1 read2 (commandDefinition: SqliteCommandDefinition) =
         SqlCommand.querySetList2
-            connection deps (SqliteGlobalConf.Snapshot) read1 read2 commandDefinition
+            connection deps (SqliteConfiguration.Snapshot) read1 read2 commandDefinition
 
     /// Return the 3 first sets of rows as a tuple of 3 lists accordingly to the command definition.
     let querySetList3 connection read1 read2 read3 (commandDefinition: SqliteCommandDefinition) =
         SqlCommand.querySetList3
-            connection deps (SqliteGlobalConf.Snapshot) read1 read2 read3 commandDefinition
+            connection deps (SqliteConfiguration.Snapshot) read1 read2 read3 commandDefinition
 
     /// Execute the command accordingly to its definition and,
     /// - return the first cell value, if it is available and of the given type.
     /// - throw an exception, otherwise.
     let executeScalar<'Scalar> connection (commandDefinition: SqliteCommandDefinition) =
         SqlCommand.executeScalar<'Scalar, _, _, _, _, _, _, _, _, _>
-            connection deps (SqliteGlobalConf.Snapshot) commandDefinition
+            connection deps (SqliteConfiguration.Snapshot) commandDefinition
 
     /// Execute the command accordingly to its definition and,
     /// - return Some, if the first cell is available and of the given type.
@@ -140,9 +145,9 @@ module SqliteCommand =
     /// - throw an exception, otherwise.
     let executeScalarOrNone<'Scalar> connection (commandDefinition: SqliteCommandDefinition) =
         SqlCommand.executeScalarOrNone<'Scalar, _, _, _, _, _, _, _, _, _>
-            connection deps (SqliteGlobalConf.Snapshot) commandDefinition
+            connection deps (SqliteConfiguration.Snapshot) commandDefinition
 
     /// Execute the command accordingly to its definition and, return the number of rows affected.
     let executeNonQuery connection (commandDefinition: SqliteCommandDefinition) =
         SqlCommand.executeNonQuery
-            connection deps (SqliteGlobalConf.Snapshot) commandDefinition
+            connection deps (SqliteConfiguration.Snapshot) commandDefinition
