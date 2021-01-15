@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.1" />
-    <PackageReference Include="Vp.FSharp.Sql" Version="1.0.33" />
+    <PackageReference Include="Vp.FSharp.Sql" Version="1.0.34" />
   </ItemGroup>
 
 </Project>
