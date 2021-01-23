@@ -19,12 +19,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="SqliteNullDbValue.fs" />
+    <Compile Include="SqliteCommand.fs" />
+    <Compile Include="SqliteTransaction.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.113.1" />
-    <PackageReference Include="Vp.FSharp.Sql" Version="1.0.35" />
+    <PackageReference Include="Vp.FSharp.Sql" Version="1.0.41" />
   </ItemGroup>
 
 </Project>
