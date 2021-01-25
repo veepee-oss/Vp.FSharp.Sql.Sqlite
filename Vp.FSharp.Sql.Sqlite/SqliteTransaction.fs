@@ -1,5 +1,5 @@
 ﻿[<RequireQualifiedAccess>]
-module Vp.FSharp.Sql.SqlServer.SqliteTransaction
+module Vp.FSharp.Sql.Sqlite.SqliteTransaction
 
 open Vp.FSharp.Sql
 open Vp.FSharp.Sql.Sqlite
