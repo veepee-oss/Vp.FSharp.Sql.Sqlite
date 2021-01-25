@@ -5,7 +5,7 @@ open Vp.FSharp.Sql
 open Vp.FSharp.Sql.Sqlite
 
 
-let beginTransactionAsync = Constants.Deps.BeginTransactionAsync
+let private beginTransactionAsync = Constants.Deps.BeginTransactionAsync
 
 let commit cancellationToken isolationLevel connection body =
     Transaction.commit cancellationToken isolationLevel connection beginTransactionAsync body
