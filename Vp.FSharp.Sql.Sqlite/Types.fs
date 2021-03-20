@@ -16,6 +16,7 @@ type SqliteDbValue =
     | Text of string
     | Blob of byte array
 
+/// SQLite Command Definition
 type SqliteCommandDefinition =
     CommandDefinition<
         SQLiteConnection,
@@ -25,11 +26,13 @@ type SqliteCommandDefinition =
         SQLiteTransaction,
         SqliteDbValue>
 
+/// SQLite Configuration
 type SqliteConfiguration =
     SqlConfigurationCache<
         SQLiteConnection,
         SQLiteCommand>
 
+/// SQLite Dependencies
 type SqliteDependencies =
     SqlDependencies<
         SQLiteConnection,
