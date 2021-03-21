@@ -18,13 +18,13 @@ let notCommit cancellationToken isolationLevel connection body =
     Transaction.notCommit cancellationToken isolationLevel connection beginTransactionAsync body
 
 /// Create and commit an automatically generated transaction with the given connection, isolation,
-/// cancellation token and transaction body. 
+/// cancellation token and transaction body.
 /// The commit phase only occurs if the transaction body returns Ok.
 let commitOnOk cancellationToken isolationLevel connection body =
     Transaction.commitOnOk cancellationToken isolationLevel connection beginTransactionAsync body
 
 /// Create and commit an automatically generated transaction with the given connection, isolation,
-/// cancellation token and transaction body. 
+/// cancellation token and transaction body.
 /// The commit phase only occurs if the transaction body returns Some.
 let commitOnSome cancellationToken isolationLevel connection body =
     Transaction.commitOnSome cancellationToken isolationLevel connection beginTransactionAsync body
