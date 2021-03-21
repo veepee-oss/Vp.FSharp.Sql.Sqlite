@@ -4,11 +4,11 @@ module Vp.FSharp.Sql.Sqlite.SqliteCommand
 open Vp.FSharp.Sql
 
 
-/// Initialize a command definition with the given text contained in the given string.
+/// Initialize a new command definition with the given text contained in the given string.
 let text value : SqliteCommandDefinition =
     SqlCommand.text value
 
-/// Initialize a command definition with the given text spanning over several strings (ie. list).
+/// Initialize a new command definition with the given text spanning over several strings (ie. list).
 let textFromList value : SqliteCommandDefinition =
     SqlCommand.textFromList value
 
@@ -40,27 +40,27 @@ let prepare value (commandDefinition: SqliteCommandDefinition) : SqliteCommandDe
 let transaction value (commandDefinition: SqliteCommandDefinition) : SqliteCommandDefinition =
     SqlCommand.transaction value commandDefinition
 
-/// Return the sets of rows as an AsyncSeq accordingly to the command definition.
+/// Execute the command and return the sets of rows as an AsyncSeq accordingly to the command definition.
 let queryAsyncSeq connection read (commandDefinition: SqliteCommandDefinition) =
     SqlCommand.queryAsyncSeq
         connection (Constants.Deps) (SqliteConfiguration.Snapshot) read commandDefinition
 
-/// Return the sets of rows as a list accordingly to the command definition.
+/// Execute the command and return the sets of rows as a list accordingly to the command definition.
 let queryList connection read (commandDefinition: SqliteCommandDefinition) =
     SqlCommand.queryList
         connection (Constants.Deps) (SqliteConfiguration.Snapshot) read commandDefinition
 
-/// Return the first set of rows as a list accordingly to the command definition.
+/// Execute the command and return the first set of rows as a list accordingly to the command definition.
 let querySetList connection read (commandDefinition: SqliteCommandDefinition) =
     SqlCommand.querySetList
         connection (Constants.Deps) (SqliteConfiguration.Snapshot) read commandDefinition
 
-/// Return the 2 first sets of rows as a tuple of 2 lists accordingly to the command definition.
+/// Execute the command and return the 2 first sets of rows as a tuple of 2 lists accordingly to the command definition.
 let querySetList2 connection read1 read2 (commandDefinition: SqliteCommandDefinition) =
     SqlCommand.querySetList2
         connection (Constants.Deps) (SqliteConfiguration.Snapshot) read1 read2 commandDefinition
 
-/// Return the 3 first sets of rows as a tuple of 3 lists accordingly to the command definition.
+/// Execute the command and return the 3 first sets of rows as a tuple of 3 lists accordingly to the command definition.
 let querySetList3 connection read1 read2 read3 (commandDefinition: SqliteCommandDefinition) =
     SqlCommand.querySetList3
         connection (Constants.Deps) (SqliteConfiguration.Snapshot) read1 read2 read3 commandDefinition
