@@ -647,12 +647,32 @@ Output:
 
 Example:
 ```fsharp
-let example = 42
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+
+SqliteTransaction.defaultNotCommit connection (fun connection _ -> async {
+    do! SqliteCommand.text $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    return!
+        SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+        |> SqliteCommand.executeScalar<int64> connection
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
 ```
 
 Output:
 ```txt
-42
+1L
+0L
 ```
 
 </details>
@@ -705,12 +725,33 @@ Output:
 
 Example:
 ```fsharp
-let example = 42
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.defaultCommit connection (fun connection _ -> async {
+    do! SqliteCommand.text $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    return!
+        SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+        |> SqliteCommand.executeScalar<int64> connection
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
 ```
 
 Output:
 ```txt
-42
+1L
+1L
 ```
 
 </details>
@@ -723,12 +764,33 @@ Output:
 
 Example:
 ```fsharp
-let example = 42
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.defaultNotCommit connection (fun connection _ -> async {
+    do! SqliteCommand.text $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    return!
+        SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+        |> SqliteCommand.executeScalar<int64> connection
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
 ```
 
 Output:
 ```txt
-42
+1L
+0L
 ```
 
 </details>
@@ -741,14 +803,70 @@ Output:
 > 
 > The commit phase only occurs if the transaction body returns Ok.
 
-Example:
+Example 1:
 ```fsharp
-let example = 42
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.defaultCommitOnOk connection (fun connection _ -> async {
+    do! SqliteCommand.text $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    do!
+        SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+        |> SqliteCommand.executeScalar<int64> connection
+        |> Async.Ignore
+    return Ok 42
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
 ```
 
-Output:
+Output 1:
 ```txt
-42
+Ok 42
+1L
+```
+
+Example 2:
+```fsharp
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.defaultCommitOnOk connection (fun connection _ -> async {
+    do! SqliteCommand.text $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    do!
+        SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+        |> SqliteCommand.executeScalar<int64> connection
+        |> Async.Ignore
+    return Error "fail"
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
+```
+
+Output 2:
+```txt
+Error "fail"
+0L
 ```
 
 </details>
@@ -761,15 +879,70 @@ Output:
 > 
 > The commit phase only occurs if the transaction body returns Some.
 
-
-Example:
+Example 1:
 ```fsharp
-let example = 42
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.defaultCommitOnSome connection (fun connection _ -> async {
+    do! SqliteCommand.text $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    do!
+        SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+        |> SqliteCommand.executeScalar<int64> connection
+        |> Async.Ignore
+    return Some 42
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
 ```
 
-Output:
+Output 1:
 ```txt
-42
+Some 42
+1L
+```
+
+Example 2:
+```fsharp
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.defaultCommitOnSome connection (fun connection _ -> async {
+    do! SqliteCommand.text $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    do!
+        SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+        |> SqliteCommand.executeScalar<int64> connection
+        |> Async.Ignore
+    return None
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
+```
+
+Output 2:
+```txt
+None
+0L
 ```
 
 </details>
