@@ -29,6 +29,7 @@ let cancellationToken value (commandDefinition: SqliteCommandDefinition) : Sqlit
     SqlCommand.cancellationToken value commandDefinition
 
 /// Update the command definition with the given timeout.
+/// Note: kludged because SQLite doesn't support per-command timeout values.
 let timeout value (commandDefinition: SqliteCommandDefinition) : SqliteCommandDefinition =
     SqlCommand.timeout value commandDefinition
 
@@ -74,7 +75,7 @@ let executeScalar<'Scalar> connection (commandDefinition: SqliteCommandDefinitio
 
 /// Execute the command accordingly to its definition and,
 /// - return Some, if the first cell is available and of the given type.
-/// - return None, if first cell is DbNull.
+/// - return None, if first cell is DBNull.
 /// - throw an exception, otherwise.
 let executeScalarOrNone<'Scalar> connection (commandDefinition: SqliteCommandDefinition) =
     SqlCommand.executeScalarOrNone<'Scalar, _, _, _, _, _, _, _, _>
