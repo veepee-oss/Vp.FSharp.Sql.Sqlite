@@ -815,8 +815,7 @@ SqliteTransaction.defaultCommitOnOk connection (fun connection _ -> async {
         |> SqliteCommand.executeNonQuery connection
         |> Async.Ignore
 
-    do!
-        SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+    do! SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
         |> SqliteCommand.executeScalar<int64> connection
         |> Async.Ignore
     return Ok 42
@@ -848,8 +847,7 @@ SqliteTransaction.defaultCommitOnOk connection (fun connection _ -> async {
         |> SqliteCommand.executeNonQuery connection
         |> Async.Ignore
 
-    do!
-        SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+    do! SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
         |> SqliteCommand.executeScalar<int64> connection
         |> Async.Ignore
     return Error "fail"
@@ -891,8 +889,7 @@ SqliteTransaction.defaultCommitOnSome connection (fun connection _ -> async {
         |> SqliteCommand.executeNonQuery connection
         |> Async.Ignore
 
-    do!
-        SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+    do! SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
         |> SqliteCommand.executeScalar<int64> connection
         |> Async.Ignore
     return Some 42
