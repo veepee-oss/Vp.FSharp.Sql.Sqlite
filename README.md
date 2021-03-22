@@ -30,45 +30,6 @@ TBD    | [![Semantic Release](https://img.shields.io/badge/Semantic%20Release-17
 
 # 📚 How to Use
 
-## 🎓 Example 1
-
-```fsharp
-open Vp.FSharp.Sql.Sqlite
-
-
-async {
-    use connection = new SQLiteConnection("Data Source=:memory:")
-
-    let readFirstSet _ (read: SqlRecordReader<_>) = read.Value<int64> 0
-    let readSecondSet _ (read: SqlRecordReader<_>) = read.Value<double> 0
-    let readThirdSet _ (read: SqlRecordReader<_>) = read.Value<string> 0
-
-    let! sets = 
-        SqliteCommand.text "SELECT @a; SELECT @b; SELECT @c;"
-        |> SqliteCommand.parameters
-            [ "a", SqliteDbValue.Integer 32L 
-              "b", SqliteDbValue.Real 32.32
-              "c", SqliteDbValue.Text "Meow" ]
-        |> SqliteCommand.timeout (TimeSpan.FromMilliseconds 5.2)
-        |> SqliteCommand.queryList3 connection readFirstSet readSecondSet readThirdSet 
-    
-    printfn "Sets = %A" sets
-}
-```
-
-## 🎓 Example 2
-
-```fsharp
-open Vp.FSharp.Sql.Sqlite
-
-
-async {
-    use connection = new SQLiteConnection("Data Source=:memory:")
-
-}
-
-```
-
 ## 💿 Supported Database Values
 
 Just a little FYI:
@@ -351,6 +312,8 @@ We are obviously going to talk about how to build the SQLite commands.
 
 Example 1:
 ```fsharp
+type Row<'T> = { Set: int32; Record: int32; Data: 'T list }
+
 let getCounterQuery n =
     sprintf
         """
@@ -443,12 +406,23 @@ Output:
 
 Example:
 ```fsharp
-let example = 42
+type Row<'T> = { Set: int32; Record: int32; Data: 'T list }
+
+let readRow set record (read: SqlRecordReader<_>)  =
+    { Set = set; Record = record; Data = List.init (read.Count) (read.Value<int64>) }
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+[ 0; 1; 1; 2; 3; 5 ]
+|> List.map (sprintf "SELECT %d;")
+|> SqliteCommand.textFromList
+|> SqliteCommand.querySetList connection (readRow 1)
+|> Async.RunSynchronously
+|> List.iter (fun x -> printfn "Set = %A; Row = %A; Data = %A" x.Set x.Record x.Data)
 ```
 
 Output:
 ```txt
-42
+Set = 1; Row = 0; Data = [0L]
 ```
 
 </details>
@@ -460,12 +434,29 @@ Output:
 
 Example:
 ```fsharp
-let example = 42
+type Row<'T> = { Set: int32; Record: int32; Data: 'T list }
+
+let readRow set record (read: SqlRecordReader<_>)  =
+    { Set = set; Record = record; Data = List.init (read.Count) (read.Value<int64>) }
+
+let printRow row = printfn "Set = %A; Row = %A; Data = %A" row.Set row.Record row.Data
+
+let set1, set2 =
+    use connection = new SQLiteConnection("Data Source=:memory:")
+    [ 0; 1; 1; 2; 3; 5 ]
+    |> List.map (sprintf "SELECT %d;")
+    |> SqliteCommand.textFromList
+    |> SqliteCommand.querySetList2 connection (readRow 1) (readRow 2)
+    |> Async.RunSynchronously
+
+List.iter printRow set1
+List.iter printRow set2
 ```
 
 Output:
 ```txt
-42
+Set = 1; Row = 0; Data = [0L]
+Set = 2; Row = 0; Data = [1L]
 ```
 
 </details>
@@ -477,12 +468,31 @@ Output:
 
 Example:
 ```fsharp
-let example = 42
+type Row<'T> = { Set: int32; Record: int32; Data: 'T list }
+
+let readRow set record (read: SqlRecordReader<_>)  =
+    { Set = set; Record = record; Data = List.init (read.Count) (read.Value<int64>) }
+
+let printRow row = printfn "Set = %A; Row = %A; Data = %A" row.Set row.Record row.Data
+
+let set1, set2, set3 =
+    use connection = new SQLiteConnection("Data Source=:memory:")
+    [ 0; 1; 1; 2; 3; 5 ]
+    |> List.map (sprintf "SELECT %d;")
+    |> SqliteCommand.textFromList
+    |> SqliteCommand.querySetList3 connection (readRow 1) (readRow 2) (readRow 3)
+    |> Async.RunSynchronously
+
+List.iter printRow set1
+List.iter printRow set2
+List.iter printRow set3
 ```
 
 Output:
 ```txt
-42
+Set = 1; Row = 0; Data = [0L]
+Set = 2; Row = 0; Data = [1L]
+Set = 3; Row = 0; Data = [1L]
 ```
 
 </details>
@@ -496,7 +506,11 @@ Output:
 
 Example:
 ```fsharp
-let example = 42
+use connection = new SQLiteConnection("Data Source=:memory:")
+SqliteCommand.text "SELECT 42;"
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
 ```
 
 Output:
@@ -516,12 +530,24 @@ Output:
 
 Example:
 ```fsharp
-let example = 42
+use connection = new SQLiteConnection("Data Source=:memory:")
+
+SqliteCommand.text "SELECT 42;"
+|> SqliteCommand.executeScalarOrNone<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
+
+SqliteCommand.text "SELECT NULL;"
+|> SqliteCommand.executeScalarOrNone<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
+0
 ```
 
 Output:
 ```txt
-42
+Some 42L
+None
 ```
 
 </details>
@@ -534,12 +560,16 @@ Output:
 
 Example:
 ```fsharp
-let example = 42
+use connection = new SQLiteConnection("Data Source=:memory:")
+SqliteCommand.text "SELECT 42;"
+|> SqliteCommand.executeNonQuery connection
+|> Async.RunSynchronously
+|> printfn "%A"
 ```
 
 Output:
 ```txt
-42
+-1
 ```
 
 </details>
