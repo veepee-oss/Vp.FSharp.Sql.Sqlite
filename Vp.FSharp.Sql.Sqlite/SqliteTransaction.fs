@@ -19,15 +19,15 @@ let notCommit cancellationToken isolationLevel connection body =
 
 /// Create and commit an automatically generated transaction with the given connection, isolation,
 /// cancellation token and transaction body.
-/// The commit phase only occurs if the transaction body returns Ok.
-let commitOnOk cancellationToken isolationLevel connection body =
-    Transaction.commitOnOk cancellationToken isolationLevel connection beginTransactionAsync body
-
-/// Create and commit an automatically generated transaction with the given connection, isolation,
-/// cancellation token and transaction body.
 /// The commit phase only occurs if the transaction body returns Some.
 let commitOnSome cancellationToken isolationLevel connection body =
     Transaction.commitOnSome cancellationToken isolationLevel connection beginTransactionAsync body
+
+/// Create and commit an automatically generated transaction with the given connection, isolation,
+/// cancellation token and transaction body.
+/// The commit phase only occurs if the transaction body returns Ok.
+let commitOnOk cancellationToken isolationLevel connection body =
+    Transaction.commitOnOk cancellationToken isolationLevel connection beginTransactionAsync body
 
 /// Create and commit an automatically generated transaction with the given connection and transaction body.
 let defaultCommit connection body = Transaction.defaultCommit connection beginTransactionAsync body
@@ -37,8 +37,8 @@ let defaultNotCommit connection body = Transaction.defaultNotCommit connection b
 
 /// Create and commit an automatically generated transaction with the given connection and transaction body.
 /// The commit phase only occurs if the transaction body returns Ok.
-let defaultCommitOnOk connection body = Transaction.defaultCommitOnOk connection beginTransactionAsync body
+let defaultCommitOnSome connection body = Transaction.defaultCommitOnSome connection beginTransactionAsync body
 
 /// Create and commit an automatically generated transaction with the given connection and transaction body.
 /// The commit phase only occurs if the transaction body returns Some.
-let defaultCommitOnSome connection body = Transaction.defaultCommitOnSome connection beginTransactionAsync body
+let defaultCommitOnOk connection body = Transaction.defaultCommitOnOk connection beginTransactionAsync body
