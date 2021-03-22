@@ -260,7 +260,7 @@ The Command execution has been cancelled, reason: "A task was canceled."
 > and cancel/close your connection if that timeout is exceeded. 
 > How to do that would obviously be application/language specific.
 
-Sources:
+🔎 Sources:
 - [StackOverflow: `SQLiteCommand.CommandTimeout` behavior](https://stackoverflow.com/a/29824438/4636721)
 - [StackOverflow: Specify `SELECT` timeout for SQLITE](https://stackoverflow.com/a/8388331/4636721)
 
@@ -306,14 +306,16 @@ let tableName = "people"
 use connection = new SQLiteConnection("Data Source=:memory:")
 connection.Open()
 
-let transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted)
+use transaction = connection.BeginTransaction(IsolationLevel.ReadCommitted)
 
+// Create a table
 SqliteCommand.text $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
 |> SqliteCommand.transaction transaction
 |> SqliteCommand.executeNonQuery connection
 |> Async.RunSynchronously
 |> printfn "%A"
 
+// The table is created here
 SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
 |> SqliteCommand.transaction transaction
 |> SqliteCommand.executeScalar<int64> connection
@@ -322,6 +324,7 @@ SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND n
 
 transaction.Rollback()
 
+// The table creation has been rollbacked
 SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
 |> SqliteCommand.executeScalar<int64> connection
 |> Async.RunSynchronously
@@ -346,14 +349,65 @@ We are obviously going to talk about how to build the SQLite commands.
 
 > Execute the command and return the sets of rows as an AsyncSeq accordingly to the command definition.
 
-Example:
+Example 1:
 ```fsharp
-let example = 42
+let getCounterQuery n =
+    sprintf
+        """
+        WITH RECURSIVE counter(value) AS (VALUES(1) UNION ALL SELECT value + 1 FROM counter WHERE value < %d)
+        SELECT value FROM counter;
+        """ n
+
+let readRow set record (read: SqlRecordReader<_>) =
+    { Set = set; Record = record; Data = List.init (read.Count) (read.Value<int64>) }
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+[ 0; 1; 1; 2; 3; 5 ]
+|> List.map getCounterQuery
+|> SqliteCommand.textFromList
+|> SqliteCommand.queryAsyncSeq connection readRow
+|> AsyncSeq.toListSynchronously
+|> List.iter (fun x -> printfn "Set = %A; Row = %A; Data = %A" x.Set x.Record x.Data)
 ```
 
-Output:
+Output 1:
 ```txt
-42
+Set = 0; Row = 0; Data = [1L]
+Set = 1; Row = 0; Data = [1L]
+Set = 2; Row = 0; Data = [1L]
+Set = 3; Row = 0; Data = [1L]
+Set = 3; Row = 1; Data = [2L]
+Set = 4; Row = 0; Data = [1L]
+Set = 4; Row = 1; Data = [2L]
+Set = 4; Row = 2; Data = [3L]
+Set = 5; Row = 0; Data = [1L]
+Set = 5; Row = 1; Data = [2L]
+Set = 5; Row = 2; Data = [3L]
+Set = 5; Row = 3; Data = [4L]
+Set = 5; Row = 4; Data = [5L]
+```
+
+Notes 📝:
+- The output type must be consistent across all the result sets and records.
+- If you need different types you may want to either:
+  - Create DU with each type you want to output
+  - Use `querySetList2` or `querySetList3` ⬇️
+- The `read`er can also get the `Value` given a certain field name:
+
+Example 2:
+```fsharp
+use connection = new SQLiteConnection("Data Source=:memory:")
+[ 0; 1; 1; 2; 3; 5; 8; 13; 21; 34; 55; ]
+|> List.map (sprintf "SELECT %d AS cola;")
+|> SqliteCommand.textFromList
+|> SqliteCommand.queryList connection (fun _ _ read -> read.Value<int64> "cola")
+|> Async.RunSynchronously
+|> printfn "%A"
+```
+
+Output 2:
+```txt
+[0L; 1L; 1L; 2L; 3L; 5L; 8L; 13L; 21L; 34L; 55L]
 ```
 
 </details>
@@ -365,12 +419,18 @@ Output:
 
 Example:
 ```fsharp
-let example = 42
+use connection = new SQLiteConnection("Data Source=:memory:")
+[ 0; 1; 1; 2; 3; 5; 8; 13; 21; 34; 55; ]
+|> List.map (sprintf "SELECT %d;")
+|> SqliteCommand.textFromList
+|> SqliteCommand.queryList connection (fun _ _ read -> read.Value<int64> 0)
+|> Async.RunSynchronously
+|> printfn "%A"
 ```
 
 Output:
 ```txt
-42
+[0L; 1L; 1L; 2L; 3L; 5L; 8L; 13L; 21L; 34L; 55L]
 ```
 
 </details>
@@ -685,7 +745,6 @@ Output:
 </details>
 
 # ❤ How to Contribute
-
 Bug reports, feature requests, and pull requests are very welcome! Please read the [Contribution Guidelines](./CONTRIBUTION.md) to get started.
 
 # 📜 Licensing
