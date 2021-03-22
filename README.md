@@ -24,9 +24,9 @@ TBD    | [![Semantic Release](https://img.shields.io/badge/Semantic%20Release-17
 
 # 📦 NuGet Package
 
- Name                  | Version  | Command |
----------------------- | -------- | ------- |
- `Vp.FSharp.Sql.Sqlite | [![NuGet Status](http://img.shields.io/nuget/v/Vp.FSharp.Sql.Sqlite.svg)](https://www.nuget.org/packages/Vp.FSharp.Sql.Sqlite) | `Install-Package Vp.FSharp.Sql.Sqlite`
+ Name                   | Version  | Command |
+----------------------- | -------- | ------- |
+ `Vp.FSharp.Sql.Sqlite` | [![NuGet Status](http://img.shields.io/nuget/v/Vp.FSharp.Sql.Sqlite.svg)](https://www.nuget.org/packages/Vp.FSharp.Sql.Sqlite) | `Install-Package Vp.FSharp.Sql.Sqlite`
 
 # 📚 How to Use
 
