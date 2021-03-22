@@ -337,8 +337,6 @@ Output:
 
 </details>
 
-</br>
-
 ### ⚙ Command Execution
 
 We are obviously going to talk about how to build the SQLite commands.
@@ -376,6 +374,7 @@ Output:
 ```
 
 </details>
+
 
 <details> 
 <summary><code>querySetList</code></summary>
@@ -485,7 +484,6 @@ Output:
 
 </details>
 
-</br>
 
 ### 🦮 `SqliteNullDbValue`: Null Helpers
 
@@ -494,7 +492,7 @@ The module to handle options and results in parameters.
 <details> 
 <summary><code>ifNone</code></summary>
 
-> Return SQLite DB `Null` value if the given option is `None`, otherwise the underlying wrapped in `Some`.
+> Return SQLite DB Null value if the given option is `None`, otherwise the underlying wrapped in `Some`.
 
 Example:
 ```fsharp
@@ -513,7 +511,7 @@ Output:
 <details> 
 <summary><code>ifError</code></summary>
 
-> Return SQLite DB `Null` value if the given option is `Error`, otherwise the underlying wrapped in `Ok`.
+> Return SQLite DB Null value if the given option is `Error`, otherwise the underlying wrapped in `Ok`.
 
 Example:
 ```fsharp
@@ -528,8 +526,6 @@ Output:
 ```
 
 </details>
-
-</br>
 
 ### 🚄 `SqliteTransaction`: Transaction Helpers
 
@@ -687,8 +683,6 @@ Output:
 ```
 
 </details>
-
-</br>
 
 # ❤ How to Contribute
 
