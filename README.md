@@ -731,7 +731,8 @@ use connection = new SQLiteConnection("Data Source=:memory:")
 connection.Open()
 
 SqliteTransaction.defaultCommit connection (fun connection _ -> async {
-    do! SqliteCommand.text $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+    do! $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.text 
         |> SqliteCommand.executeNonQuery connection
         |> Async.Ignore
 
@@ -742,7 +743,8 @@ SqliteTransaction.defaultCommit connection (fun connection _ -> async {
 |> Async.RunSynchronously
 |> printfn "%A"
 
-SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
 |> SqliteCommand.executeScalar<int64> connection
 |> Async.RunSynchronously
 |> printfn "%A"
@@ -943,7 +945,8 @@ SqliteTransaction.defaultCommitOnSome connection (fun connection _ -> async {
 |> Async.RunSynchronously
 |> printfn "%A"
 
-SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
 |> SqliteCommand.executeScalar<int64> connection
 |> Async.RunSynchronously
 |> printfn "%A"
