@@ -66,14 +66,14 @@ let defaultCommit connection body = Transaction.defaultCommit connection beginTr
 
 /// Create and commit an automatically generated transaction with the given connection and transaction body.
 /// This function runs synchronously.
-let defaultCommitSync connection body = Transaction.defaultNotCommitSync connection beginTransaction body
+let defaultCommitSync connection body = Transaction.defaultCommitSync connection beginTransaction body
 
 /// Create and do not commit an automatically generated transaction with the given connection and transaction body.
 /// This function runs asynchronously.
 let defaultNotCommit connection body = Transaction.defaultNotCommit connection beginTransactionAsync body
 
 /// Create and do not commit an automatically generated transaction with the given connection and transaction body.
-/// This function runs asynchronously.
+/// This function runs synchronously.
 let defaultNotCommitSync connection body = Transaction.defaultNotCommitSync connection beginTransaction body
 
 /// Create and commit an automatically generated transaction with the given connection and transaction body.
