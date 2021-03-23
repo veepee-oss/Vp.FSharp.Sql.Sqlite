@@ -15,7 +15,7 @@ let commit cancellationToken isolationLevel connection body =
     Transaction.commit cancellationToken isolationLevel connection beginTransactionAsync body
 
 /// Create and commit an automatically generated transaction with the given connection, isolation,
-/// cancellation token and transaction body.
+/// and transaction body.
 /// This function runs synchronously.
 let commitSync isolationLevel connection body =
     Transaction.commitSync isolationLevel connection beginTransaction body
