@@ -29,6 +29,8 @@ TBD    | [![Semantic Release](https://img.shields.io/badge/Semantic%20Release-17
 
 # 📚 How to Use
 
+📝 Note: It's worth noting that the examples below illustrating functions running asynchronously do leverage `Async.RunSynchronously`. This is purely for the sake of reducing the nestedness that would happen if we were using `async` computation expressions instead.  
+
 ## 💿 Supported Database Values
 
 Just a little FYI:
