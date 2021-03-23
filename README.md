@@ -1,7 +1,6 @@
 # `Vp.FSharp.Sql.Sqlite`
 
-The library providing specific native DB types definition for SQLite and
-relying on [`System.Data.SQLite.Core `](https://system.data.sqlite.org) and providing a DB-specific module `Sqlite`.
+An opinionated F# library to interact with SQLite databases following [`Vp.FSharp.Sql`](https://github.com/veepee-oss/Vp.FSharp.Sql) principles and relying on [`System.Data.SQLite.Core`](https://system.data.sqlite.org).
 
 📝 Note: It has been decided to **not** rely on [`Microsoft.Data.Sqlite`](https://docs.microsoft.com/en-us/dotnet/standard/data/sqlite/?tabs=netcore-cli)
 [due to its lack of support for `TransactionScope`](https://github.com/dotnet/efcore/issues/13825).
