@@ -913,26 +913,7 @@ This is the main module to interact with `SQLiteTransaction`.
 <details> 
 <summary><code>commit</code></summary>
 
-> Create and commit an automatically generated transaction with the given connection, isolation, cancellation token and transaction body.
->
-> This function runs asynchronously.
-
-Example:
-```fsharp
-let example = 42
-```
-
-Output:
-```txt
-42
-```
-
-</details>
-
-<details> 
-<summary><code>notCommit</code></summary>
-
-> Create and do not commit an automatically generated transaction with the given connection, isolation, cancellation token and transaction body.
+> Create and commit an automatically generated transaction with the given connection and transaction body.
 >
 > This function runs asynchronously.
 
@@ -941,9 +922,11 @@ Example:
 let tableName = "people"
 
 use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
 
-SqliteTransaction.defaultNotCommit connection (fun connection _ -> async {
-    do! SqliteCommand.text $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+SqliteTransaction.commit (CancellationToken.None) (IsolationLevel.ReadCommitted) connection (fun connection _ -> async {
+    do! $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.text 
         |> SqliteCommand.executeNonQuery connection
         |> Async.Ignore
 
@@ -954,7 +937,90 @@ SqliteTransaction.defaultNotCommit connection (fun connection _ -> async {
 |> Async.RunSynchronously
 |> printfn "%A"
 
-SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
+```
+
+Output:
+```txt
+1L
+1L
+```
+
+</details>
+
+<details> 
+<summary><code>commitSync</code></summary>
+
+> Create and commit an automatically generated transaction with the given connection and transaction body.
+>
+> This function runs synchronously.
+
+Example:
+```fsharp
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.commitSync (IsolationLevel.ReadCommitted) connection (fun connection _ ->
+    $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+    |> SqliteCommand.text 
+    |> SqliteCommand.executeNonQuerySync connection
+    |> ignore
+
+    SqliteCommand.text $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+    |> SqliteCommand.executeScalarSync<int64> connection
+)
+|> printfn "%A"
+
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
+|> SqliteCommand.executeScalarSync<int64> connection
+|> printfn "%A"
+```
+
+Output:
+```txt
+1L
+1L
+```
+
+</details>
+
+<details> 
+<summary><code>notCommit</code></summary>
+
+> Create and do not commit an automatically generated transaction with the given connection and transaction body.
+>
+> This function runs synchronously.
+
+Example:
+```fsharp
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.notCommit (CancellationToken.None) (IsolationLevel.ReadCommitted) connection (fun connection _ -> async {
+    do! $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);" 
+        |> SqliteCommand.text
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    return!
+        $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+        |> SqliteCommand.text
+        |> SqliteCommand.executeScalar<int64> connection
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
 |> SqliteCommand.executeScalar<int64> connection
 |> Async.RunSynchronously
 |> printfn "%A"
@@ -969,22 +1035,41 @@ Output:
 </details>
 
 <details> 
-<summary><code>commitOnOk</code></summary>
+<summary><code>notCommitSync</code></summary>
 
-> Create and commit an automatically generated transaction with the given connection, isolation, cancellation token and transaction body.
-> 
-> The commit phase only occurs if the transaction body returns Ok.
-> 
-> This function runs asynchronously.
+> Create and do not commit an automatically generated transaction with the given connection and transaction body.
+>
+> This function runs synchronously.
 
 Example:
 ```fsharp
-let example = 42
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.notCommitSync (IsolationLevel.ReadCommitted) connection (fun connection _ -> 
+    $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);" 
+    |> SqliteCommand.text
+    |> SqliteCommand.executeNonQuery connection
+    |> ignore
+
+    $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+    |> SqliteCommand.text
+    |> SqliteCommand.executeScalarSync<int64> connection
+)
+|> printfn "%A"
+
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
+|> SqliteCommand.executeScalarSync<int64> connection
+|> printfn "%A"
 ```
 
 Output:
 ```txt
-42
+1L
+0L
 ```
 
 </details>
@@ -992,18 +1077,315 @@ Output:
 <details> 
 <summary><code>commitOnSome</code></summary>
 
-> Create and commit an automatically generated transaction with the given connection, isolation, cancellation token and transaction body.
-> 
+> Create and commit an automatically generated transaction with the given connection and transaction body.
+>
 > The commit phase only occurs if the transaction body returns Some.
+>
+> This function runs asynchronously.
 
-Example:
+Example 1:
 ```fsharp
-let example = 42
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.commitOnSome (CancellationToken.None) (IsolationLevel.ReadCommitted) connection (fun connection _ -> async {
+    do! $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.text 
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    do! $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+        |> SqliteCommand.text
+        |> SqliteCommand.executeScalar<int64> connection
+        |> Async.Ignore
+    return Some 42
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
 ```
 
-Output:
+Output 1:
 ```txt
-42
+Some 42
+1L
+```
+
+Example 2:
+```fsharp
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.commitOnSome (CancellationToken.None) (IsolationLevel.ReadCommitted) connection (fun connection _ -> async {
+    do! $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.text 
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    do! $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';" 
+        |> SqliteCommand.text 
+        |> SqliteCommand.executeScalar<int64> connection
+        |> Async.Ignore
+    return None
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
+```
+
+Output 2:
+```txt
+None
+0L
+```
+
+</details>
+
+<details> 
+<summary><code>commitOnSomeSync</code></summary>
+
+> Create and commit an automatically generated transaction with the given connection and transaction body.
+>
+> The commit phase only occurs if the transaction body returns Some.
+>
+> This function runs synchronously.
+
+Example 1:
+```fsharp
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.commitOnSomeSync (IsolationLevel.ReadCommitted) connection (fun connection _ -> 
+    $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+    |> SqliteCommand.text 
+    |> SqliteCommand.executeNonQuerySync connection
+    |> ignore
+
+    $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+    |> SqliteCommand.text
+    |> SqliteCommand.executeScalarSync<int64> connection
+    |> ignore
+    return Some 42
+)
+|> printfn "%A"
+
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
+|> SqliteCommand.executeScalarSync<int64> connection
+|> printfn "%A"
+```
+
+Output 1:
+```txt
+Some 42
+1L
+```
+
+Example 2:
+```fsharp
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.commitOnSomeSync (IsolationLevel.ReadCommitted) connection (fun connection _ ->
+    $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+    |> SqliteCommand.text 
+    |> SqliteCommand.executeNonQuerySync connection
+    |> ignore
+
+    $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';" 
+    |> SqliteCommand.text 
+    |> SqliteCommand.executeScalarSync<int64> connection
+    |> ignore
+    return None
+)
+|> printfn "%A"
+
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
+|> SqliteCommand.executeScalarSync<int64> connection
+|> printfn "%A"
+```
+
+Output 2:
+```txt
+None
+0L
+```
+
+</details>
+
+<details> 
+<summary><code>commitOnOk</code></summary>
+
+> Create and commit an automatically generated transaction with the given connection and transaction body.
+>
+> The commit phase only occurs if the transaction body returns Ok.
+>
+> This function runs asynchronously.
+
+Example 1:
+```fsharp
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.commitOnOk (CancellationToken.None) (IsolationLevel.ReadCommitted) connection (fun connection _ -> async {
+    do! $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.text
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    do! $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+        |> SqliteCommand.text 
+        |> SqliteCommand.executeScalar<int64> connection
+        |> Async.Ignore
+    return Ok 42
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
+```
+
+Output 1:
+```txt
+Ok 42
+1L
+```
+
+Example 2:
+```fsharp
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.commitOnOk (CancellationToken.None) (IsolationLevel.ReadCommitted) connection (fun connection _ -> async {
+    do! $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+        |> SqliteCommand.text 
+        |> SqliteCommand.executeNonQuery connection
+        |> Async.Ignore
+
+    do! $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+        |> SqliteCommand.text
+        |> SqliteCommand.executeScalar<int64> connection
+        |> Async.Ignore
+    return Error "fail"
+})
+|> Async.RunSynchronously
+|> printfn "%A"
+
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
+|> SqliteCommand.executeScalar<int64> connection
+|> Async.RunSynchronously
+|> printfn "%A"
+```
+
+Output 2:
+```txt
+Error "fail"
+0L
+```
+
+</details>
+
+<details> 
+<summary><code>commitOnOkSync</code></summary>
+
+> Create and commit an automatically generated transaction with the given connection and transaction body.
+>
+> The commit phase only occurs if the transaction body returns Ok.
+>
+> This function runs synchronously.
+
+Example 1:
+```fsharp
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.commitOnOkSync (IsolationLevel.ReadCommitted) connection (fun connection _ ->
+    $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+    |> SqliteCommand.text
+    |> SqliteCommand.executeNonQuerySync connection
+    |> ignore
+
+    $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+    |> SqliteCommand.text 
+    |> SqliteCommand.executeScalarSync<int64> connection
+    |> ignore
+    return Ok 42
+)
+|> printfn "%A"
+
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
+|> SqliteCommand.executeScalarSync<int64> connection
+|> printfn "%A"
+```
+
+Output 1:
+```txt
+Ok 42
+1L
+```
+
+Example 2:
+```fsharp
+let tableName = "people"
+
+use connection = new SQLiteConnection("Data Source=:memory:")
+connection.Open()
+
+SqliteTransaction.commitOnOkSync (IsolationLevel.ReadCommitted) connection (fun connection _ ->
+    $"CREATE TABLE {tableName} (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL);"
+    |> SqliteCommand.text 
+    |> SqliteCommand.executeNonQuerySync connection
+    |> ignore
+
+    $"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+    |> SqliteCommand.text
+    |> SqliteCommand.executeScalarSync<int64> connection
+    |> ignore
+    return Error "fail"
+)
+|> printfn "%A"
+
+$"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{tableName}';"
+|> SqliteCommand.text 
+|> SqliteCommand.executeScalarSync<int64> connection
+|> printfn "%A"
+```
+
+Output 2:
+```txt
+Error "fail"
+0L
 ```
 
 </details>
@@ -1418,7 +1800,7 @@ Error "fail"
 >
 > The commit phase only occurs if the transaction body returns Ok.
 >
-> This function runs asynchronously.
+> This function runs synchronously.
 
 Example 1:
 ```fsharp
