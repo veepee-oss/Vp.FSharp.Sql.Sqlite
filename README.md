@@ -75,7 +75,6 @@ Output:
 
 </details>
 
-
 <details> 
 <summary><code>textFromList</code></summary>
 
@@ -98,7 +97,6 @@ Output:
 ```
 
 </details>
-
 
 <details> 
 <summary><code>noLogger</code></summary>
@@ -174,7 +172,6 @@ Output:
 ```
 
 </details>
-
 
 <details> 
 <summary><code>cancellationToken</code></summary>
@@ -904,7 +901,7 @@ Output:
 
 </details>
 
-### 🚄 `SqliteTransaction`: Transaction Helpers
+## 🚄 `SqliteTransaction`: Transaction Helpers
 
 This is the main module to interact with `SQLiteTransaction`.
 
@@ -913,7 +910,7 @@ This is the main module to interact with `SQLiteTransaction`.
 <details> 
 <summary><code>commit</code></summary>
 
-> Create and commit an automatically generated transaction with the given connection and transaction body.
+> Create and commit an automatically generated transaction with the given connection, isolation, cancellation token and transaction body.
 >
 > This function runs asynchronously.
 
@@ -955,7 +952,7 @@ Output:
 <details> 
 <summary><code>commitSync</code></summary>
 
-> Create and commit an automatically generated transaction with the given connection and transaction body.
+> Create and commit an automatically generated transaction with the given connection, isolation and transaction body.
 >
 > This function runs synchronously.
 
@@ -994,7 +991,7 @@ Output:
 <details> 
 <summary><code>notCommit</code></summary>
 
-> Create and do not commit an automatically generated transaction with the given connection and transaction body.
+> Create and do not commit an automatically generated transaction with the given connection, isolation, cancellation token and transaction body.
 >
 > This function runs synchronously.
 
@@ -1037,7 +1034,7 @@ Output:
 <details> 
 <summary><code>notCommitSync</code></summary>
 
-> Create and do not commit an automatically generated transaction with the given connection and transaction body.
+> Create and do not commit an automatically generated transaction with the given connection, isolation and transaction body.
 >
 > This function runs synchronously.
 
@@ -1077,7 +1074,7 @@ Output:
 <details> 
 <summary><code>commitOnSome</code></summary>
 
-> Create and commit an automatically generated transaction with the given connection and transaction body.
+> Create and commit an automatically generated transaction with the given connection, isolation, cancellation token and transaction body.
 >
 > The commit phase only occurs if the transaction body returns Some.
 >
@@ -1158,7 +1155,7 @@ None
 <details> 
 <summary><code>commitOnSomeSync</code></summary>
 
-> Create and commit an automatically generated transaction with the given connection and transaction body.
+> Create and commit an automatically generated transaction with the given connection, isolation and transaction body.
 >
 > The commit phase only occurs if the transaction body returns Some.
 >
@@ -1235,7 +1232,7 @@ None
 <details> 
 <summary><code>commitOnOk</code></summary>
 
-> Create and commit an automatically generated transaction with the given connection and transaction body.
+> Create and commit an automatically generated transaction with the given connection, isolation, cancellation token and transaction body.
 >
 > The commit phase only occurs if the transaction body returns Ok.
 >
@@ -1316,7 +1313,7 @@ Error "fail"
 <details> 
 <summary><code>commitOnOkSync</code></summary>
 
-> Create and commit an automatically generated transaction with the given connection and transaction body.
+> Create and commit an automatically generated transaction with the given connection, isolation and transaction body.
 >
 > The commit phase only occurs if the transaction body returns Ok.
 >
