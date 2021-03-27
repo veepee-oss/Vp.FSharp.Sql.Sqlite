@@ -861,7 +861,7 @@ Output:
 
 </details>
 
-### 🦮 `SqliteNullDbValue`: Null Helpers
+## 🦮 `SqliteNullDbValue`: Null Helpers
 
 The module to handle options and results in parameters.
 
