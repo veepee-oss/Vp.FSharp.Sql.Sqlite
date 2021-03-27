@@ -301,7 +301,7 @@ Output:
 
 ### ⚙ Command Execution
 
-We are obviously going to talk about how to build the SQLite commands.
+We are obviously going to talk about how to execute the SQLite commands.
 
 <details> 
 <summary><code>queryAsyncSeq</code></summary>
