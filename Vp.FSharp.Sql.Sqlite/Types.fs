@@ -50,18 +50,18 @@ type internal Constants private () =
         parameter.ParameterName <- name
         match value with
         | Null ->
-            parameter.TypeName <- (nameof Null).ToUpperInvariant()
+            parameter.TypeName <- "NULL"
         | Integer value ->
-            parameter.TypeName <- (nameof Integer).ToUpperInvariant()
+            parameter.TypeName <- "INTEGER"
             parameter.Value <- value
         | Real value ->
-            parameter.TypeName <- (nameof Real).ToUpperInvariant()
+            parameter.TypeName <- "REAL"
             parameter.Value <- value
         | Text value ->
-            parameter.TypeName <- (nameof Text).ToUpperInvariant()
+            parameter.TypeName <- "TEXT"
             parameter.Value <- value
         | Blob value ->
-            parameter.TypeName <- (nameof Blob).ToUpperInvariant()
+            parameter.TypeName <- "BLOB"
             parameter.Value <- value
         parameter
 
