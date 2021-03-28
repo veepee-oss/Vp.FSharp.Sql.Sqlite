@@ -52,7 +52,7 @@ The main module is here to help you build and execute SQL(ite) commands (i.e. `S
     
 ### 🏗️ Command Construction
 
-We are obviously going to talk about how to build SQLite commands. 
+We are obviously going to talk about how to build `SQLiteCommand` definition. 
 
 📝 Note: the meaning of the word "update" below has to be put in a F# perspective, i.e. **immutable** update, as in the update returns a new updated and immutable instance.
 
@@ -301,7 +301,7 @@ Output:
 
 ### ⚙ Command Execution
 
-We are obviously going to talk about how to execute SQLite commands.
+We are obviously going to talk about how to execute `SQLiteCommand` definitions.
 
 <details> 
 <summary><code>queryAsyncSeq</code></summary>

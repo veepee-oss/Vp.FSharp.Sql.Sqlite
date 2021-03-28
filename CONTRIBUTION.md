@@ -21,7 +21,8 @@ Examples of unacceptable behavior by participants include:
 - Public or private harassment
 - Publishing others' private information, such as a physical or electronic address, without explicit permission
 - Other conduct which could reasonably be considered inappropriate in a professional setting
-- Our Responsibilities
+
+### Our Responsibilities
 - Project maintainers are responsible for clarifying the standards of acceptable behavior and are expected to take appropriate and fair corrective action in response to any instances of unacceptable behavior.
 
 Project maintainers have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct, or to ban temporarily or permanently any contributor for other behaviors that they deem inappropriate, threatening, offensive, or harmful.
@@ -30,7 +31,7 @@ Project maintainers have the right and responsibility to remove, edit, or reject
 This Code of Conduct applies both within project spaces and in public spaces when an individual is representing the project or its community. Examples of representing a project or community include using an official project e-mail address, posting via an official social media account, or acting as an appointed representative at an online or offline event. Representation of a project may be further defined and clarified by project maintainers.
 
 ### Enforcement
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at [INSERT EMAIL ADDRESS]. All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at [this email address](mailto:mperret@veepee.com). All complaints will be reviewed and investigated and will result in a response that is deemed necessary and appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.
 
 Project maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions as determined by other members of the project's leadership.
 
@@ -52,7 +53,7 @@ Guidelines for bug reports:
 
 1. Use the GitHub issue search — check if the issue has already been reported.
 2. Check if the issue has been fixed — try to reproduce it using the `main` branch in the repository.
-3. and report the problem — ideally create a reduced test case.
+3. Report the problem — ideally create a reduced test case.
 
 Please try to be as detailed as possible in your report. Include information about your Operating System, as well as your dotnet (or mono \ .Net Framework), F# and project versions. Please provide steps to reproduce the issue as well as the outcome you were expecting! All these details will help developers to fix any potential bugs.
 
@@ -89,7 +90,7 @@ Please adhere to the coding conventions in the project (indentation, accurate co
    # Navigate to the newly cloned directory
    cd Vp.FSharp.Sql.Sqlite
    # Assign the original repo to a remote called "upstream"
-   git remote add upstream https://github.com/fsprojects/Vp.FSharp.Sql.Sqlite
+   git remote add upstream https://github.com/veepee-oss/Vp.FSharp.Sql.Sqlite
    ```
 
 2. If you cloned a while ago, get the latest changes from upstream, and update your fork:
@@ -114,7 +115,6 @@ Please adhere to the coding conventions in the project (indentation, accurate co
 
    ```bash
    dotnet tool restore
-   dotnet fake build
    ```
 
 6. Push your topic branch up to your fork:
