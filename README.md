@@ -995,7 +995,7 @@ Output:
 
 > Create and do not commit an automatically generated transaction with the given connection, isolation, cancellation token and transaction body.
 >
-> This function runs synchronously.
+> This function runs asynchronously.
 
 Example:
 ```fsharp
