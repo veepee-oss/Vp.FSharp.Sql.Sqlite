@@ -14,7 +14,7 @@
     <PackageId>Vp.FSharp.Sql.Sqlite</PackageId>
     <PackageTags>Veepee,F#,fsharp,functional,SQL,SQLite,System.Data.SQLite</PackageTags>
     <RepositoryType>git</RepositoryType>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression>ISC</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
