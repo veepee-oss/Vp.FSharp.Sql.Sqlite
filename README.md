@@ -41,9 +41,10 @@ Just a little FYI:
 type SqliteDbValue =
     | Null
     | Integer of int64
-    | Real of double
-    | Text of string
-    | Blob of byte array
+    | Real    of double
+    | Text    of string
+    | Blob    of byte array
+    | Custom  of DbType * obj
 ```
 
 ## 🧱`SqliteCommand`
@@ -174,6 +175,10 @@ Output:
 ```
 
 </details>
+
+Note: in case you want to pass some types that aren't yet supported by the library,  
+you can use the `Custom` DU case which allows you to pass whatever underlying `DbType` with the relevant `obj` value.
+
 
 <details> 
 <summary><code>cancellationToken</code></summary>

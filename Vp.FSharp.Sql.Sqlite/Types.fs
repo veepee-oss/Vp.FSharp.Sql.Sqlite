@@ -12,9 +12,10 @@ open Vp.FSharp.Sql
 type SqliteDbValue =
     | Null
     | Integer of int64
-    | Real of double
-    | Text of string
-    | Blob of byte array
+    | Real    of double
+    | Text    of string
+    | Blob    of byte array
+    | Custom  of DbType * obj
 
 /// SQLite Command Definition
 type SqliteCommandDefinition =
@@ -53,16 +54,21 @@ type internal Constants private () =
             parameter.TypeName <- "NULL"
         | Integer value ->
             parameter.TypeName <- "INTEGER"
-            parameter.Value <- value
+            parameter.Value    <- value
         | Real value ->
             parameter.TypeName <- "REAL"
-            parameter.Value <- value
+            parameter.Value    <- value
         | Text value ->
             parameter.TypeName <- "TEXT"
-            parameter.Value <- value
+            parameter.Value    <- value
         | Blob value ->
             parameter.TypeName <- "BLOB"
-            parameter.Value <- value
+            parameter.Value    <- value
+
+        | Custom (dbType, value) ->
+            parameter.DbType <- dbType
+            parameter.Value  <- value
+
         parameter
 
     static member Deps : SqliteDependencies =
