@@ -46,6 +46,21 @@ type SqliteDependencies =
 [<AbstractClass; Sealed>]
 type internal Constants private () =
 
+    static let beginTransactionAsync (connection: SQLiteConnection) (isolationLevel: IsolationLevel) _ =
+        ValueTask.FromResult(connection.BeginTransaction(isolationLevel))
+
+    static let executeReaderAsync (command: SQLiteCommand) _ =
+        Task.FromResult(command.ExecuteReader())
+
+    static let deps : SqliteDependencies =
+        { CreateCommand = fun connection -> connection.CreateCommand()
+          SetCommandTransaction = fun command transaction -> command.Transaction <- transaction
+          BeginTransaction = fun connection -> connection.BeginTransaction
+          BeginTransactionAsync = beginTransactionAsync
+          ExecuteReader = fun command -> command.ExecuteReader()
+          ExecuteReaderAsync = executeReaderAsync
+          DbValueToParameter = Constants.DbValueToParameter }
+
     static member DbValueToParameter name value =
         let parameter = SQLiteParameter()
         parameter.ParameterName <- name
@@ -71,17 +86,4 @@ type internal Constants private () =
 
         parameter
 
-    static member Deps : SqliteDependencies =
-        let beginTransactionAsync (connection: SQLiteConnection) (isolationLevel: IsolationLevel) _ =
-            ValueTask.FromResult(connection.BeginTransaction(isolationLevel))
-
-        let executeReaderAsync (command: SQLiteCommand) _ =
-            Task.FromResult(command.ExecuteReader())
-
-        { CreateCommand = fun connection -> connection.CreateCommand()
-          SetCommandTransaction = fun command transaction -> command.Transaction <- transaction
-          BeginTransaction = fun connection -> connection.BeginTransaction
-          BeginTransactionAsync = beginTransactionAsync
-          ExecuteReader = fun command -> command.ExecuteReader()
-          ExecuteReaderAsync = executeReaderAsync
-          DbValueToParameter = Constants.DbValueToParameter }
+    static member Deps = deps
